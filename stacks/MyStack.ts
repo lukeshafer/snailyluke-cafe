@@ -1,4 +1,4 @@
-import { StackContext, Api, EventBus } from "sst/constructs";
+import { StackContext, Api, EventBus, Table } from "sst/constructs";
 
 export function API({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
@@ -7,21 +7,40 @@ export function API({ stack }: StackContext) {
     },
   });
 
+  const table = new Table(stack, "data", {
+    fields: {
+      pk: 'string',
+      sk: 'string',
+      gsi1pk: 'string',
+      gsi1sk: 'string',
+    },
+    primaryIndex: {
+      partitionKey: 'pk',
+      sortKey: 'sk',
+    },
+    globalIndexes: {
+      gsi1: {
+        partitionKey: 'gsi1pk',
+        sortKey: 'gsi1sk',
+      },
+    },
+
+  })
+
   const api = new Api(stack, "api", {
     defaults: {
       function: {
-        bind: [bus],
+        bind: [bus, table],
       },
     },
     routes: {
-      "GET /": "packages/functions/src/lambda.handler",
-      "GET /todo": "packages/functions/src/todo.list",
-      "POST /todo": "packages/functions/src/todo.create",
+      "GET /drink/{drinkname}": "packages/functions/src/api/order-drink.handler",
+      "GET /drinks": "packages/functions/src/api/drinks.handler"
     },
   });
 
-  bus.subscribe("todo.created", {
-    handler: "packages/functions/src/events/todo-created.handler",
+  bus.subscribe("drink.ordered", {
+    handler: "packages/functions/src/events/drink-ordered.handler",
   });
 
   stack.addOutputs({
