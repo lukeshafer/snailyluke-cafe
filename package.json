@@ -9,7 +9,9 @@
     "deploy": "sst deploy",
     "remove": "sst remove",
     "console": "sst console",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "overlay:dev": "pnpm run --filter overlay dev",
+    "overlay:build": "pnpm run --filter overlay build"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",

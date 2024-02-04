@@ -1,7 +1,9 @@
 import { randomUUID } from 'crypto';
-import { Entity, type EntityConfiguration } from 'electrodb';
+import { Entity, EntityItem, type EntityConfiguration } from 'electrodb';
 import { Table } from 'sst/node/table';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
+export type Drink = EntityItem<typeof drinks>
 
 export const config = {
 	table: Table.data.tableName,
