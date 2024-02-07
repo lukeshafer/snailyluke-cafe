@@ -1,5 +1,9 @@
 @layer base, components, utilities;
 
+body {
+  background-color: black;
+}
+
 @layer base {
   :root {
     font-family:
@@ -16,7 +20,6 @@
       sans-serif;
     font-size: 1rem;
 
-    background-color: black;
     color: white;
   }
 

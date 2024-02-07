@@ -35,6 +35,7 @@ export function API({ stack }: StackContext) {
 		routes: {
 			'GET /drink/{drinkname}': 'packages/functions/src/api/order-drink.handler',
 			'GET /drinks': 'packages/functions/src/api/drinks.handler',
+			'GET /menu': 'packages/functions/src/api/menu.handler',
 		},
 	});
 
@@ -42,9 +43,9 @@ export function API({ stack }: StackContext) {
 		path: 'packages/overlay',
 		buildCommand: 'pnpm run build',
 		buildOutput: 'dist',
-		dev: {
-			deploy: true,
-		},
+		//dev: {
+			//deploy: true,
+		//},
 		environment: {
 			VITE_APP_API_URL: api.url,
 		},

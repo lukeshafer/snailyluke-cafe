@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Coffee",
+    "file": "coffee.png"
+  },
+  {
+    "name": "Caffè Latte",
+    "file": ""
+  },
+  {
+    "name": "Cappuccino",
+    "file": ""
+  },
+  {
+    "name": "Chai",
+    "file": ""
+  },
+  {
+    "name": "Green Tea",
+    "file": "greentea.png"
+  },
+  {
+    "name": "Bubble Tea",
+    "file": ""
+  },
+  {
+    "name": "Water",
+    "file": ""
+  },
+  {
+    "name": "Sparkling Water",
+    "file": ""
+  }
+]
