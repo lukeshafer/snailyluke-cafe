@@ -6,6 +6,8 @@ export const handler = (async event => {
 
   const today = new Date().toDateString();
 
+  console.log(event)
+
   const todaysDrinks = allDrinks.data.filter(drink => {
     const orderDate = new Date(drink.orderedAt ?? 0).toDateString();
     return orderDate === today;
