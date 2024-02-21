@@ -1,7 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer base, components, utilities;
 
 body {
-  background-color: black;
+  background-color: theme('colors.gray.900');
 }
 
 @layer base {

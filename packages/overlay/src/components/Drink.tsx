@@ -1,12 +1,14 @@
-import styles from "./Drink.module.css"
+import styles from './Drink.module.css';
 
-export default function Drink(props: { drinkName: string; fileName: string; username: string }) {
+export type DrinkType = { drinkName: string; fileName: string; username: string };
+
+export default function Drink(props: DrinkType) {
 	return (
 		<li class={styles.drink}>
 			{props.fileName ? (
 				<>
-					<img src={props.fileName} />
-					<p>{props.username}</p>
+					<img width="80" src={props.fileName} />
+					{/*<p>{props.username}</p>*/}
 				</>
 			) : (
 				<p>

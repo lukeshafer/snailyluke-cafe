@@ -5,7 +5,7 @@ import menu from '@snailyluke-cafe/core/menu.json';
 export const handler: APIGatewayProxyHandlerV2 = async event => {
   const userString = event.headers['nightbot-user'];
   const drinkName = event.pathParameters?.drinkname;
-  console.log({ headers: event.headers, body: event.body, event });
+  //console.log({ headers: event.headers, body: event.body, event });
 
   if (!userString) {
     console.log('no userstring', event.headers);
@@ -46,6 +46,8 @@ export const handler: APIGatewayProxyHandlerV2 = async event => {
 
   if (!menuItem) return 'Please order a drink from the !menu';
 
+  await drinks.delete({ username }).go()
+
   const result = await drinks
     .upsert({
       username,
@@ -54,7 +56,7 @@ export const handler: APIGatewayProxyHandlerV2 = async event => {
       fileName: menuItem.file,
     })
     .go();
-  console.log(result);
+  //console.log(result);
 
   return `Okay ${displayName}, you ordered ${menuItem.name}`;
 };

@@ -6,7 +6,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 export type Drink = EntityItem<typeof drinks>;
 
 export const config = {
-  table: Table.data.tableName,
+  table: Table.database.tableName,
   client: new DynamoDBClient(),
 } satisfies EntityConfiguration;
 
@@ -33,6 +33,9 @@ export const drinks = new Entity(
       fileName: {
         type: 'string',
         required: true,
+      },
+      isServed: {
+        type: 'boolean'
       },
       orderedAt: {
         type: 'number',
