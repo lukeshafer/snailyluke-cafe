@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "overlay:dev": "pnpm run --filter overlay dev",
     "overlay:dev:host": "pnpm run --filter overlay dev:host",
-    "overlay:build": "pnpm run --filter overlay build"
+    "overlay:build": "pnpm run --filter overlay build",
+    "solid:dev": "pnpm run --filter create-a-snail dev"
   },
   "devDependencies": {
     "@pulumi/pulumi": "^3.111.1",
