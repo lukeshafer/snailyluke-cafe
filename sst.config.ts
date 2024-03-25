@@ -18,7 +18,7 @@ export default $config({
 		//old stack:
 		//  Database > Event > API > Overlay
 
-		const drinkDatabase = new sst.aws.Dynamo("CafeDatabase", {
+		const cafeDatabase = new sst.aws.Dynamo("CafeDatabase", {
 			fields: {
 				pk: "string",
 				sk: "string",
@@ -51,18 +51,18 @@ export default $config({
 		const api = new sst.aws.ApiGatewayV2("CafeAPI")
 			.route("GET /drink/{drinkname}", {
 				handler: "packages/functions/src/api/order-drink.handler",
-				link: [drinkDatabase],
+				link: [cafeDatabase],
 			})
 			.route("GET /drinks", {
 				handler: "packages/functions/src/api/drinks.handler",
-				link: [drinkDatabase],
+				link: [cafeDatabase],
 			})
 			.route("GET /menu", {
 				handler: "packages/functions/src/api/menu.handler",
 			})
 			.route("PATCH /drink/{drinkname}", {
 				handler: "packages/functions/src/api/update-drink.handler",
-				link: [drinkDatabase],
+				link: [cafeDatabase],
 			});
 
 		const overlay = new sst.aws.StaticSite("CafeOverlay", {
@@ -75,5 +75,39 @@ export default $config({
 				VITE_APP_API_URL: api.url,
 			},
 		});
+
+		const domainName =
+			$app.stage === "prod"
+				? "cafe.snailyluke.com"
+				: `${$app.stage}.env.snailyluke.com`;
+		const hostedZone = "snailyluke.com";
+
+		const twitchClientId = new sst.Secret("TwitchClientId");
+		const twitchClientSecret = new sst.Secret("TwitchClientSecret");
+
+		const auth = new sst.aws.Auth("SiteAuth", {
+			authenticator: {
+				handler: "packages/functions/src/auth.handler",
+				environment: {
+					DOMAIN_NAME: domainName,
+				},
+				link: [cafeDatabase, twitchClientId, twitchClientSecret],
+			},
+		});
+
+		const site = new sst.aws.SolidStart("CafeSite", {
+			path: "packages/site",
+			environment: {
+				DOMAIN_NAME: domainName,
+			},
+			//domain: { domainName, hostedZone },
+			link: [cafeDatabase],
+		});
+
+		return {
+			SiteAuthUrl: auth.url,
+			OverlayUrl: overlay.url,
+			CafeSiteUrl: site.url,
+		};
 	},
 });

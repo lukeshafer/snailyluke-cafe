@@ -1,8 +1,9 @@
 {
-  "name": "create-a-snail",
+  "name": "site",
   "type": "module",
   "scripts": {
     "dev": "sst dev vinxi dev",
+    "vinxi": "vinxi",
     "build": "sst dev vinxi build",
     "start": "sst dev vinxi start"
   },

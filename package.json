@@ -13,7 +13,7 @@
     "overlay:dev": "pnpm run --filter overlay dev",
     "overlay:dev:host": "pnpm run --filter overlay dev:host",
     "overlay:build": "pnpm run --filter overlay build",
-    "solid:dev": "pnpm run --filter create-a-snail dev"
+    "site:dev": "pnpm run --filter site dev"
   },
   "devDependencies": {
     "@pulumi/pulumi": "^3.111.1",
