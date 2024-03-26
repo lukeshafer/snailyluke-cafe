@@ -1,4 +1,4 @@
-import { useLocation, type RouteSectionProps } from "@solidjs/router";
+import { useLocation } from "@solidjs/router";
 import {
 	For,
 	createSignal,
@@ -7,8 +7,9 @@ import {
 	createEffect,
 } from "solid-js";
 import { isServer } from "solid-js/web";
+import { Slider, Tabs } from "@kobalte/core";
 
-export default function CreateASnail(props: RouteSectionProps) {
+export default function CreateASnail() {
 	return (
 		<main class="p-4">
 			<h1 class="text-2xl font-bold text-gray-800 text-center">
@@ -21,10 +22,10 @@ export default function CreateASnail(props: RouteSectionProps) {
 
 const bodies = [
 	{
-		name: "Oval",
-		id: "oval",
-		src: "body-oval.png",
-		alt: "Oval-shaped body",
+		name: "Round",
+		id: "round",
+		src: "round.png",
+		alt: "Round-shaped body",
 		eyeX: "210%",
 		eyeY: "50%",
 		mouthX: "475%",
@@ -33,7 +34,7 @@ const bodies = [
 	{
 		name: "Chunky",
 		id: "chunky",
-		src: "body-chunky.png",
+		src: "chunky.png",
 		alt: "Big chunky body",
 		eyeX: "205%",
 		eyeY: "25%",
@@ -43,54 +44,110 @@ const bodies = [
 	{
 		name: "Short body",
 		id: "short",
-		src: "body-short.png",
+		src: "short.png",
 		alt: "Short body",
 		eyeX: "210%",
 		eyeY: "110%",
 		mouthX: "475%",
 		mouthY: "500%",
 	},
+	{
+		name: "Tall body",
+		id: "tall",
+		src: "tall.png",
+		alt: "Tall body",
+		eyeX: "210%",
+		eyeY: "0%",
+		mouthX: "475%",
+		mouthY: "200%",
+	},
+	{
+		name: "Small body",
+		id: "small",
+		src: "small.png",
+		alt: "Small body",
+		eyeX: "210%",
+		eyeY: "90%",
+		mouthX: "475%",
+		mouthY: "440%",
+	},
 ] satisfies Array<Body>;
 
 const eyes = [
 	{
 		name: "Default",
-		id: "eyes-default",
-		src: "eyes-default.png",
+		id: "default",
+		src: "default.png",
 		alt: "Eyes with no particular expression",
 	},
 	{
 		name: "Angry",
-		id: "eyes-angry",
-		src: "eyes-angry.png",
+		id: "angry",
+		src: "angry.png",
 		alt: "Eyes with angry eyebrows",
 	},
 	{
 		name: "Sad",
-		id: "eyes-sad",
-		src: "eyes-sad.png",
+		id: "sad",
+		src: "sad.png",
 		alt: "Eyes with sad eyebrows",
+	},
+	{
+		name: "Happy",
+		id: "happy",
+		src: "happy.png",
+		alt: "Eyes closed with a happy expression",
+	},
+	{
+		name: "Far",
+		id: "far",
+		src: "far.png",
+		alt: "Eyes with no particular expression, spread far apart from each other",
+	},
+	{
+		name: "Glistening",
+		id: "glistening",
+		src: "glistening.png",
+		alt: "Glistening eyes",
 	},
 ];
 
 const mouths = [
 	{
 		name: "Smile",
-		id: "mouth-smile",
-		src: "mouth-smile.png",
+		id: "smile",
+		src: "smile.png",
 		alt: "Smiling mouth",
 	},
 	{
 		name: "Frown",
-		id: "mouth-frown",
-		src: "mouth-frown.png",
+		id: "frown",
+		src: "frown.png",
 		alt: "Frowning mouth",
 	},
 	{
 		name: "Neutral",
-		id: "mouth-neutral",
-		src: "mouth-neutral.png",
+		id: "neutral",
+		src: "neutral.png",
 		alt: "Neutral mouth",
+	},
+	{
+		name: "Joy",
+		id: "joy",
+		src: "joy.png",
+		alt: "Open smiling mouth",
+	},
+	{
+		name: "Agape",
+		id: "agape",
+		src: "agape.png",
+		alt: "Open neutral mouth",
+	},
+	{
+		name: "None",
+		id: "none",
+		src: "none.png",
+		alt: "No mouth",
 	},
 ];
 
@@ -125,6 +182,9 @@ function SnailForm() {
 	const [selectedEyes, setSelectedEyes] = createSignal<SnailPart>(defaultEyes);
 	const [selectedMouth, setSelectedMouth] =
 		createSignal<SnailPart>(defaultMouth);
+	const [hue, setHue] = createSignal<string>("180deg");
+	const [saturation, setSaturation] = createSignal<number>(3);
+	const [brightness, setBrightness] = createSignal<string>("1");
 
 	createEffect(() => {
 		const url = new URL(window.location.href);
@@ -135,9 +195,21 @@ function SnailForm() {
 	});
 
 	return (
-		<form>
+		<form
+			style={{
+				"--hue": hue(),
+				"--saturation": String(saturation() + 1.5),
+				"--brightness": brightness(),
+			}}
+		>
 			<div class="w-60 h-60 bg-gray-200 grid place-items-center mx-auto">
-				<figure class="relative w-[200px] h-[200px]">
+				<figure
+					class="relative w-[200px] h-[200px]"
+					style={{
+						filter:
+							"contrast(0.8) sepia(0.5) hue-rotate(var(--hue, 180deg)) saturate(var(--saturation, 3)) brightness(var(--brightness, 1))",
+					}}
+				>
 					<img
 						width="200"
 						src={`${pathPrefix}/01-body/${selectedBody().src}`}
@@ -166,72 +238,94 @@ function SnailForm() {
 				</figure>
 			</div>
 
-			<Fieldset>
-				<legend class="p-2">Body</legend>
-				<For each={bodies}>
-					{(body) => (
-						<Label checked={String(selectedBody().id === body.id)}>
-							<img
-								width="200"
-								src={`${pathPrefix}/01-body/${body.src}`}
-								alt={body.alt}
-							/>
-							<span>{body.name}</span>
-							<input
-								type="radio"
-								name="body"
-								value={body.id}
-								onChange={() => setSelectedBody(body)}
-								checked={selectedBody().id === body.id}
-							/>
-						</Label>
-					)}
-				</For>
-			</Fieldset>
-			<Fieldset>
-				<legend class="p-2">Eyes</legend>
-				<For each={eyes}>
-					{(eye) => (
-						<Label checked={String(selectedEyes().id === eye.id)}>
-							<img
-								width="100"
-								src={`${pathPrefix}/02-eyes/${eye.src}`}
-								alt={eye.alt}
-							/>
-							<span>{eye.name}</span>
-							<input
-								type="radio"
-								name="eye"
-								value={eye.id}
-								onChange={() => setSelectedEyes(eye)}
-								checked={selectedEyes().id === eye.id}
-							/>
-						</Label>
-					)}
-				</For>
-			</Fieldset>
-			<Fieldset>
-				<legend class="p-2">Mouth</legend>
-				<For each={mouths}>
-					{(mouth) => (
-						<Label checked={String(selectedMouth().id === mouth.id)}>
-							<img
-								width="100"
-								src={`${pathPrefix}/03-mouth/${mouth.src}`}
-								alt={mouth.alt}
-							/>
-							<span>{mouth.name}</span>
-							<input
-								type="radio"
-								name="mouth"
-								value={mouth.id}
-								onChange={() => setSelectedMouth(mouth)}
-								checked={selectedMouth().id === mouth.id}
-							/>
-						</Label>
-					)}
-				</For>
-			</Fieldset>
+			<Tabs.Root>
+				<Tabs.List>
+					<Tabs.Trigger value="body">Body</Tabs.Trigger>
+					<Tabs.Trigger value="eyes">Eyes</Tabs.Trigger>
+					<Tabs.Trigger value="mouth">Mouth</Tabs.Trigger>
+					<Tabs.Trigger value="colors">Colors</Tabs.Trigger>
+				</Tabs.List>
+				<Tabs.Content value="body">
+					<Fieldset>
+						<legend class="p-2">Body</legend>
+						<For each={bodies}>
+							{(body) => (
+								<Label checked={String(selectedBody().id === body.id)}>
+									<img
+										width="200"
+										src={`${pathPrefix}/01-body/${body.src}`}
+										alt={body.alt}
+									/>
+									<span class="sr-only">{body.name}</span>
+									<input
+										class="sr-only"
+										type="radio"
+										name="body"
+										value={body.id}
+										onChange={() => setSelectedBody(body)}
+										checked={selectedBody().id === body.id}
+									/>
+								</Label>
+							)}
+						</For>
+					</Fieldset>
+				</Tabs.Content>
+				<Tabs.Content value="eyes">
+					<Fieldset>
+						<legend class="p-2">Eyes</legend>
+						<For each={eyes}>
+							{(eye) => (
+								<Label checked={String(selectedEyes().id === eye.id)}>
+									<img
+										width="100"
+										src={`${pathPrefix}/02-eyes/${eye.src}`}
+										alt={eye.alt}
+									/>
+									<span class="sr-only">{eye.name}</span>
+									<input
+										class="sr-only"
+										type="radio"
+										name="eye"
+										value={eye.id}
+										onChange={() => setSelectedEyes(eye)}
+										checked={selectedEyes().id === eye.id}
+									/>
+								</Label>
+							)}
+						</For>
+					</Fieldset>
+				</Tabs.Content>
+				<Tabs.Content value="mouth">
+					<Fieldset>
+						<legend class="p-2">Mouth</legend>
+						<For each={mouths}>
+							{(mouth) => (
+								<Label checked={String(selectedMouth().id === mouth.id)}>
+									<img
+										width="100"
+										src={`${pathPrefix}/03-mouth/${mouth.src}`}
+										alt={mouth.alt}
+									/>
+									<span class="sr-only">{mouth.name}</span>
+									<input
+										class="sr-only"
+										type="radio"
+										name="mouth"
+										value={mouth.id}
+										onChange={() => setSelectedMouth(mouth)}
+										checked={selectedMouth().id === mouth.id}
+									/>
+								</Label>
+							)}
+						</For>
+					</Fieldset>
+				</Tabs.Content>
+				<Tabs.Content value="colors">
+					<HueSlider setHue={setHue} />
+					<SaturationSlider setSaturation={setSaturation} />
+					<BrightnessSlider setBrightness={setBrightness} />
+				</Tabs.Content>
+			</Tabs.Root>
 		</form>
 	);
 }
@@ -253,7 +347,118 @@ function Label(
 		<label
 			{...props}
 			data-checked={props.checked}
-			class="p-2 grid place-items-center gap-2 data-[checked=true]:bg-lime-200 focus-within:outline focus-within:outline-4 focus-within:outline-emerald-950"
+			class="p-2 grid place-items-center gap-2 data-[checked=true]:bg-emerald-200 focus-within:outline focus-within:outline-4 focus-within:outline-emerald-950"
 		/>
+	);
+}
+
+function HueSlider(props: {
+	setHue: (value: string) => void;
+}) {
+	const colors = [
+		"hsl(39, 41%, 65%)",
+		"hsl(71, 31%, 61%)",
+		"hsl(106, 33%, 65%)",
+		"hsl(143, 36%, 64%)",
+		"hsl(197, 46%, 68%)",
+		"hsl(219, 58%, 75%)",
+		"hsl(251, 59%, 80%)",
+		"hsl(286, 50%, 77%)",
+		"hsl(324, 56%, 77%)",
+		"hsl(350, 62%, 78%)",
+		"hsl(17, 56%, 73%)",
+		"hsl(39, 41%, 65%)",
+	];
+
+	return (
+		<Slider.Root
+			class="relative flex flex-col items-center select-none touch-none w-52"
+			onChange={([value]) => {
+				props.setHue(`${value}deg`);
+			}}
+			name="hue"
+			minValue={0}
+			maxValue={360}
+			defaultValue={[180]}
+		>
+			<Slider.Label class="w-full text-center">Hue</Slider.Label>
+			<Slider.Track
+				class="bg-gray-400 relative rounded-full h-2 w-full flex"
+				style={{
+					"background-image": `linear-gradient(to right, ${colors.join(", ")})`,
+				}}
+			>
+				<Slider.Thumb
+					class="block w-4 h-4 rounded-full -top-1 bg-neutral-300 hover:shadow hover:shadow-neutral-500/50 outline outline-1 focus:outline-2 outline-neutral-500 focus:shadow focus:shadow-neutral-500"
+					style={{
+						filter:
+							"sepia(0.5) hue-rotate(var(--hue, 180deg)) saturate(3) brightness(1)",
+					}}
+				>
+					<Slider.Input />
+				</Slider.Thumb>
+			</Slider.Track>
+		</Slider.Root>
+	);
+}
+
+function SaturationSlider(props: {
+	setSaturation: (value: number) => void;
+}) {
+	return (
+		<Slider.Root
+			class="relative flex flex-col items-center select-none touch-none w-52"
+			onChange={([value]) => props.setSaturation(value)}
+			name="saturation"
+			minValue={0}
+			maxValue={3}
+			defaultValue={[1.5]}
+			step={0.1}
+		>
+			<Slider.Label class="w-full text-center">Saturation</Slider.Label>
+			<Slider.Track
+				class="bg-gray-400 relative rounded-full h-2 w-full flex"
+				style={{
+					filter:
+						"sepia(0.5) hue-rotate(var(--hue, 180deg)) saturate(var(--saturation)) brightness(1)",
+				}}
+			>
+				<Slider.Thumb class="block w-4 h-4 rounded-full -top-1 bg-neutral-300 hover:shadow hover:shadow-neutral-500/50 outline outline-1 focus:outline-2 outline-neutral-500 focus:shadow focus:shadow-neutral-500">
+					<Slider.Input />
+				</Slider.Thumb>
+			</Slider.Track>
+		</Slider.Root>
+	);
+}
+
+function BrightnessSlider(props: {
+	setBrightness: (value: number) => void;
+}) {
+	return (
+		<Slider.Root
+			class="relative flex flex-col items-center select-none touch-none w-52"
+			onChange={([value]) => props.setBrightness(value)}
+			name="brightness"
+			minValue={0.8}
+			maxValue={1.4}
+			defaultValue={[1]}
+			step={0.01}
+		>
+			<Slider.Label class="w-full text-center">Brightness</Slider.Label>
+			<Slider.Track
+				class="bg-gray-400 relative rounded-full h-2 w-full flex"
+				style={{
+					filter:
+						"sepia(0.5) \
+              hue-rotate(var(--hue, 180deg)) \
+              saturate(1.5) \
+              brightness(var(--brightness))",
+				}}
+			>
+				<Slider.Thumb class="block w-4 h-4 rounded-full -top-1 bg-neutral-300 hover:shadow hover:shadow-neutral-500/50 outline outline-1 focus:outline-2 outline-neutral-500 focus:shadow focus:shadow-neutral-500">
+					<Slider.Input />
+				</Slider.Thumb>
+			</Slider.Track>
+		</Slider.Root>
 	);
 }
