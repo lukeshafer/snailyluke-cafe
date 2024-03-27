@@ -1,13 +1,9 @@
-import { useLocation } from "@solidjs/router";
-import {
-	For,
-	createSignal,
-	type ParentProps,
-	type JSX,
-	createEffect,
-} from "solid-js";
-import { isServer } from "solid-js/web";
+import { For, type ParentProps, type JSX } from "solid-js";
 import { Slider, Tabs } from "@kobalte/core";
+import SnailPreview from "~/components/SnailPreview";
+import { bodies, eyes, mouths } from "~/snail-data";
+import { createUrlStore } from "~/lib";
+import { SNAIL_ASSETS } from "~/constants";
 
 export default function CreateASnail() {
 	return (
@@ -20,208 +16,45 @@ export default function CreateASnail() {
 	);
 }
 
-const bodies = [
-	{
-		name: "Round",
-		id: "round",
-		src: "round.png",
-		alt: "Round-shaped body",
-		faceX: "63%",
-		faceY: "14%",
-	},
-	{
-		name: "Chunky",
-		id: "chunky",
-		src: "chunky.png",
-		alt: "Big chunky body",
-		faceX: "63%",
-		faceY: "5%",
-	},
-	{
-		name: "Short body",
-		id: "short",
-		src: "short.png",
-		alt: "Short body",
-		faceX: "63%",
-		faceY: "32%",
-	},
-	{
-		name: "Tall body",
-		id: "tall",
-		src: "tall.png",
-		alt: "Tall body",
-		faceX: "65%",
-		faceY: "3%",
-		scale: 0.85,
-	},
-	{
-		name: "Small body",
-		id: "small",
-		src: "small.png",
-		alt: "Small body",
-		faceX: "65%",
-		faceY: "30%",
-		scale: 0.8,
-	},
-] satisfies Array<Body>;
-
-const eyes = [
-	{
-		name: "Default",
-		id: "default",
-		src: "default.png",
-		alt: "Eyes with no particular expression",
-	},
-	{
-		name: "Angry",
-		id: "angry",
-		src: "angry.png",
-		alt: "Eyes with angry eyebrows",
-	},
-	{
-		name: "Sad",
-		id: "sad",
-		src: "sad.png",
-		alt: "Eyes with sad eyebrows",
-	},
-	{
-		name: "Happy",
-		id: "happy",
-		src: "happy.png",
-		alt: "Eyes closed with a happy expression",
-	},
-	{
-		name: "Far",
-		id: "far",
-		src: "far.png",
-		alt: "Eyes with no particular expression, spread far apart from each other",
-	},
-	{
-		name: "Glistening",
-		id: "glistening",
-		src: "glistening.png",
-		alt: "Glistening eyes",
-	},
-];
-
-const mouths = [
-	{
-		name: "Smile",
-		id: "smile",
-		src: "smile.png",
-		alt: "Smiling mouth",
-	},
-	{
-		name: "Frown",
-		id: "frown",
-		src: "frown.png",
-		alt: "Frowning mouth",
-	},
-	{
-		name: "Neutral",
-		id: "neutral",
-		src: "neutral.png",
-		alt: "Neutral mouth",
-	},
-	{
-		name: "Joy",
-		id: "joy",
-		src: "joy.png",
-		alt: "Open smiling mouth",
-	},
-	{
-		name: "Agape",
-		id: "agape",
-		src: "agape.png",
-		alt: "Open neutral mouth",
-	},
-	{
-		name: "None",
-		id: "none",
-		src: "none.png",
-		alt: "No mouth",
-	},
-];
-
-interface Body extends SnailPart {
-	faceX: string;
-	faceY: string;
-	scale?: number;
-}
-
-interface SnailPart {
-	name: string;
-	id: string;
-	src: string;
-	alt: string;
-}
-
 function SnailForm() {
 	const pathPrefix = "create-a-snail-assets";
 
-	const searchParams = isServer
-		? new URLSearchParams(useLocation().search)
-		: new URL(window.location.href).searchParams;
-	const defaultBody =
-		bodies.find((b) => b.id === searchParams.get("body")) ?? bodies[0];
-	const defaultEyes =
-		eyes.find((e) => e.id === searchParams.get("eyes")) ?? eyes[0];
-	const defaultMouth =
-		mouths.find((m) => m.id === searchParams.get("mouth")) ?? mouths[0];
-
-	const [selectedBody, setSelectedBody] = createSignal<Body>(defaultBody);
-	const [selectedEyes, setSelectedEyes] = createSignal<SnailPart>(defaultEyes);
-	const [selectedMouth, setSelectedMouth] =
-		createSignal<SnailPart>(defaultMouth);
-	const [hue, setHue] = createSignal<string>("180deg");
-	const [saturation, setSaturation] = createSignal<number>(3);
-	const [brightness, setBrightness] = createSignal<string>("1");
-
-	createEffect(() => {
-		const url = new URL(window.location.href);
-		url.searchParams.set("body", selectedBody().id);
-		url.searchParams.set("eyes", selectedEyes().id);
-		url.searchParams.set("mouth", selectedMouth().id);
-		window.history.replaceState({}, "", url.toString());
+	const [state, setState] = createUrlStore({
+		body: bodies[0].id,
+		eyes: eyes[0].id,
+		mouth: mouths[0].id,
+		bodyHue: "180deg",
+		bodySat: "3",
+		bodyBri: "1",
+		shellHue: "180deg",
+		shellSat: "3",
+		shellBri: "1",
 	});
 
+	const selectedBody = () => bodies.find((b) => b.id === state.body)!;
+	const selectedEyes = () => eyes.find((b) => b.id === state.eyes)!;
+	const selectedMouth = () => mouths.find((b) => b.id === state.mouth)!;
+
 	return (
-		<form
-			style={{
-				"--hue": hue(),
-				"--saturation": String(saturation() + 1.5),
-				"--brightness": brightness(),
-			}}
-		>
-			<div class="w-60 h-60 bg-gray-200 grid place-items-center mx-auto">
-				<figure
-					class="relative w-[12em] h-[12em] text-lg"
-					style={{
-						filter:
-							"contrast(0.8) sepia(0.5) hue-rotate(var(--hue, 180deg)) saturate(var(--saturation, 3)) brightness(var(--brightness, 1))",
-						"--scale": selectedBody().scale ?? 1,
-					}}
-				>
-					<img
-						src={`${pathPrefix}/01-body/${selectedBody().src}`}
-						class="absolute w-full"
-					/>
-					<div
-						class="absolute top-[--y] left-[--x]"
-						style={{
-							width: "calc(var(--scale) * 30%)",
-							"--x": selectedBody().faceX,
-							"--y": selectedBody().faceY,
-						}}
-					>
-						<img src={`${pathPrefix}/02-eyes/${selectedEyes().src}`} />
-						<img
-							src={`${pathPrefix}/03-mouth/${selectedMouth().src}`}
-							class="absolute -bottom-[15%] left-1/4 w-1/2 ml-[2px]"
-						/>
-					</div>
-				</figure>
-			</div>
+		<form>
+			<SnailPreview
+				body={selectedBody().src}
+				eyes={selectedEyes().src}
+				mouth={selectedMouth().src}
+				bodyColors={{
+					hue: state.bodyHue,
+					saturation: state.bodySat,
+					brightness: state.bodyBri,
+				}}
+				shellColors={{
+					hue: state.shellHue,
+					saturation: state.shellSat,
+					brightness: state.shellBri,
+				}}
+				faceX={selectedBody().faceX}
+				faceY={selectedBody().faceY}
+				scale={selectedBody().scale}
+			/>
 
 			<Tabs.Root class="max-w-xl mx-auto">
 				<Tabs.List class="relative">
@@ -244,18 +77,26 @@ function SnailForm() {
 					<For each={bodies}>
 						{(body) => (
 							<Label checked={String(selectedBody().id === body.id)}>
-								<img
-									width="200"
-									src={`${pathPrefix}/01-body/${body.src}`}
-									alt={body.alt}
-								/>
+								<div class="relative">
+									<img
+										width="200"
+										src={`${pathPrefix}/01-body/${body.src}`}
+										alt={body.alt}
+									/>
+									<img
+										width="200"
+										src={SNAIL_ASSETS.SHELL}
+										alt=""
+										class="absolute inset-0"
+									/>
+								</div>
 								<span class="sr-only">{body.name}</span>
 								<input
 									class="sr-only"
 									type="radio"
 									name="body"
 									value={body.id}
-									onChange={() => setSelectedBody(body)}
+									onChange={() => setState("body", body.id)}
 									checked={selectedBody().id === body.id}
 								/>
 							</Label>
@@ -278,7 +119,7 @@ function SnailForm() {
 									type="radio"
 									name="eye"
 									value={eye.id}
-									onChange={() => setSelectedEyes(eye)}
+									onChange={() => setState("eyes", eye.id)}
 									checked={selectedEyes().id === eye.id}
 								/>
 							</Label>
@@ -301,7 +142,7 @@ function SnailForm() {
 									type="radio"
 									name="mouth"
 									value={mouth.id}
-									onChange={() => setSelectedMouth(mouth)}
+									onChange={() => setState("mouth", mouth.id)}
 									checked={selectedMouth().id === mouth.id}
 								/>
 							</Label>
@@ -310,20 +151,68 @@ function SnailForm() {
 				</Tab>
 
 				<Tab value="colors" legend="Colors">
-					<HueSlider setHue={setHue} />
-					<SaturationSlider setSaturation={setSaturation} />
-					<BrightnessSlider setBrightness={setBrightness} />
+					<fieldset
+						class="block w-full col-span-full border border-stone-300 p-4"
+						style={{
+							"--hue": state.bodyHue,
+							"--saturation": state.bodySat,
+							"--brightness": state.bodyBri,
+						}}
+					>
+						<legend>Body</legend>
+						<HueSlider
+							value={Number(state.bodyHue.replace("deg", ""))}
+							setHue={(hue) => setState("bodyHue", `${hue}deg`)}
+						/>
+						<SaturationSlider
+							value={Number(state.bodySat)}
+							setSaturation={(sat) => setState("bodySat", String(sat))}
+						/>
+						<BrightnessSlider
+							value={Number(state.bodyBri)}
+							setBrightness={(b) => setState("bodyBri", String(b))}
+						/>
+					</fieldset>
+					<fieldset
+						class="block w-full col-span-full border border-stone-300 p-4"
+						style={{
+							"--hue": state.shellHue,
+							"--saturation": state.shellSat,
+							"--brightness": state.shellBri,
+						}}
+					>
+						<legend>Shell</legend>
+						<HueSlider
+							value={Number(state.shellHue.replace("deg", ""))}
+							setHue={(hue) => setState("shellHue", `${hue}deg`)}
+						/>
+						<SaturationSlider
+							value={Number(state.shellSat)}
+							setSaturation={(sat) => setState("shellSat", String(sat))}
+						/>
+						<BrightnessSlider
+							value={Number(state.shellBri)}
+							setBrightness={(b) => setState("shellBri", String(b))}
+						/>
+					</fieldset>
 				</Tab>
 			</Tabs.Root>
 		</form>
 	);
 }
 
-function Tab(props: ParentProps<{ value: string; legend: string }>) {
+function Tab(
+	props: ParentProps<{
+		value: string;
+		legend: string;
+		style?: JSX.CSSProperties;
+	}>,
+) {
 	return (
 		<Tabs.Content
 			value={props.value}
 			class="my-2 p-8 border-2 border-black/50 focus-within:bg-gray-100"
+			style={props.style}
 		>
 			<fieldset class="grid grid-cols-3">
 				<legend class="sr-only">{props.legend}</legend>
@@ -342,7 +231,7 @@ function Label(
 		<label
 			{...props}
 			data-checked={props.checked}
-			class="p-2 grid place-items-center gap-2 data-[checked=true]:bg-emerald-200 focus-within:outline focus-within:outline-4 focus-within:outline-emerald-950"
+			class="p-2 grid place-items-center gap-2 data-[checked=true]:bg-emerald-200 outline outline-1 focus-within:outline-4 focus-within:outline-emerald-950"
 		/>
 	);
 }
@@ -351,7 +240,8 @@ const sliderRootClass =
 	/*tw*/ "relative flex flex-col items-center select-none touch-none w-full col-span-full my-4";
 
 function HueSlider(props: {
-	setHue: (value: string) => void;
+	value: number;
+	setHue: (value: number) => void;
 }) {
 	const colors = [
 		"hsl(39, 41%, 65%)",
@@ -372,12 +262,13 @@ function HueSlider(props: {
 		<Slider.Root
 			class={sliderRootClass}
 			onChange={([value]) => {
-				props.setHue(`${value}deg`);
+				props.setHue(value);
 			}}
 			name="hue"
 			minValue={0}
 			maxValue={360}
 			defaultValue={[180]}
+			value={[props.value]}
 		>
 			<Slider.Label class="w-full text-center">Hue</Slider.Label>
 			<Slider.Track
@@ -401,6 +292,7 @@ function HueSlider(props: {
 }
 
 function SaturationSlider(props: {
+	value: number;
 	setSaturation: (value: number) => void;
 }) {
 	return (
@@ -408,9 +300,9 @@ function SaturationSlider(props: {
 			class={sliderRootClass}
 			onChange={([value]) => props.setSaturation(value)}
 			name="saturation"
-			minValue={0}
-			maxValue={3}
-			defaultValue={[1.5]}
+			minValue={1.5}
+			maxValue={4.5}
+			value={[props.value]}
 			step={0.1}
 		>
 			<Slider.Label class="w-full text-center">Saturation</Slider.Label>
@@ -430,6 +322,7 @@ function SaturationSlider(props: {
 }
 
 function BrightnessSlider(props: {
+	value: number;
 	setBrightness: (value: number) => void;
 }) {
 	return (
@@ -438,9 +331,10 @@ function BrightnessSlider(props: {
 			onChange={([value]) => props.setBrightness(value)}
 			name="brightness"
 			minValue={0.8}
-			maxValue={1.4}
+			maxValue={1.2}
 			defaultValue={[1]}
 			step={0.01}
+			value={[props.value]}
 		>
 			<Slider.Label class="w-full text-center">Brightness</Slider.Label>
 			<Slider.Track
@@ -449,7 +343,7 @@ function BrightnessSlider(props: {
 					filter:
 						"sepia(0.5) \
               hue-rotate(var(--hue, 180deg)) \
-              saturate(1.5) \
+              saturate(3) \
               brightness(var(--brightness))",
 				}}
 			>
