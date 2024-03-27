@@ -52,34 +52,6 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2(@types/node@20.11.10)
 
-  packages/create-a-snail:
-    dependencies:
-      '@solidjs/router':
-        specifier: ^0.13.1
-        version: 0.13.1(solid-js@1.8.16)
-      '@solidjs/start':
-        specifier: ^1.0.0-rc.0
-        version: 1.0.0-rc.0(solid-js@1.8.16)(vinxi@0.3.10)(vite@5.2.4)
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.4.17(postcss@8.4.35)
-      postcss:
-        specifier: ^8.4.26
-        version: 8.4.35
-      solid-js:
-        specifier: ^1.8.16
-        version: 1.8.16
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.1
-      vinxi:
-        specifier: ^0.3.10
-        version: 0.3.10
-    devDependencies:
-      sst:
-        specifier: ^3.0.2
-        version: 3.0.2
-
   packages/functions:
     devDependencies:
       '@types/aws-lambda':
@@ -4058,6 +4030,7 @@ packages:
       picocolors: 1.0.0
       postcss: 8.4.35
       postcss-value-parser: 4.2.0
+    dev: true
 
   /autoprefixer@10.4.17(postcss@8.4.38):
     resolution: {integrity: sha512-/cpVNRLSfhOtcGflT13P2794gVSgmPgTR+erw5ifnMLZb0UnSlkK4tquLmkd3BhA+nLo5tX8Cu0upUsGKvKbmg==}
@@ -6698,6 +6671,7 @@ packages:
       nanoid: 3.3.7
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: true
 
   /postcss@8.4.38:
     resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
@@ -7320,6 +7294,7 @@ packages:
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
+    dev: true
 
   /source-map-js@1.2.0:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
